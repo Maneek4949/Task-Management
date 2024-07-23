@@ -1,22 +1,18 @@
-import {useEffect} from 'react';
+import React from 'react';
+import useTasks from '../hooks/useTasks';
 import TaskItem from './TaskItem';
-import { useTasks } from '../hooks/useTasks';
 
 const TaskList = () => {
-    const { tasks, fetchTasks } = useTasks();
+    const { tasks, loading, error } = useTasks();
 
-    useEffect(() => {
-        fetchTasks();
-    }, [fetchTasks]);
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="container mt-3">
-            <h2>Task List</h2>
-            <ul className="list-group">
-                {tasks.map(task => (
-                    <TaskItem key={task.id} task={task} />
-                ))}
-            </ul>
+        <div className="task-list">
+            {tasks.map(task => (
+                <TaskItem key={task.id} task={task} />
+            ))}
         </div>
     );
 };

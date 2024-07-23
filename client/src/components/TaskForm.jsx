@@ -1,45 +1,71 @@
-import React, { useState } from 'react';
-import { addTask } from '../services/taskService';
+import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
+import { useContext } from 'react';
+import TaskContext from '../context/TaskContext';
+import useTasks from '../hooks/useTasks';
 
-const TaskForm = () => {
+const TaskForm = ({ isOpen, onRequestClose, taskToEdit }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [status, setStatus] = useState('todo');
+    const { addTask, editTask } = useTasks();
 
-    const handleSubmit = async (e) => {
+    useEffect(() => {
+        if (taskToEdit) {
+            setTitle(taskToEdit.title);
+            setDescription(taskToEdit.description);
+            setStatus(taskToEdit.status);
+        }
+    }, [taskToEdit]);
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        await addTask({ title, description });
-        setTitle('');
-        setDescription('');
+        const task = { title, description, status };
+
+        if (taskToEdit) {
+            editTask(taskToEdit.id, task);
+        } else {
+            addTask(task);
+        }
+
+        onRequestClose();
     };
 
     return (
-        <div className="container mt-3">
-            <h2>Add Task</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="title">Title</label>
+        <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Task Form">
+            <form onSubmit={handleSubmit} className="task-form">
+                <div>
+                    <label>Title</label>
                     <input
                         type="text"
-                        id="title"
-                        className="form-control"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
                     />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="description">Description</label>
+                <div>
+                    <label>Description</label>
                     <textarea
-                        id="description"
-                        className="form-control"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary mt-2">Add Task</button>
+                <div>
+                    <label>Status</label>
+                    <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        disabled={!taskToEdit}
+                    >
+                        <option value="todo">To Do</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="done">Done</option>
+                    </select>
+                </div>
+                <button type="submit">Save Task</button>
             </form>
-        </div>
+        </Modal>
     );
 };
 

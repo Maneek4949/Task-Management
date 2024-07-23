@@ -1,41 +1,37 @@
-import {useState} from 'react';
-import { updateTaskStatus, deleteTask } from '../services/taskService';
+import React, { useState } from 'react';
+import useTasks from '../hooks/useTasks';
+import TaskForm from './TaskForm';
 
 const TaskItem = ({ task }) => {
-    const [status, setStatus] = useState(task.status);
+    const { removeTask } = useTasks();
+    const [isEditing, setIsEditing] = useState(false);
 
-    const handleStatusChange = async (newStatus) => {
-        const updatedTask = await updateTaskStatus(task.id, { ...task, status: newStatus });
-        setStatus(updatedTask.status);
+    const handleDelete = () => {
+        removeTask(task.id);
     };
 
-    const handleDelete = async () => {
-        await deleteTask(task.id);
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsEditing(false);
     };
 
     return (
-        <li className="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <h5>{task.title}</h5>
-                <p>{task.description}</p>
-                <span className={`badge bg-${status === 'done' ? 'success' : 'secondary'}`}>
-                    {status}
-                </span>
-            </div>
-            <div>
-                {status !== 'done' && (
-                    <button
-                        className="btn btn-success btn-sm me-2"
-                        onClick={() => handleStatusChange('done')}
-                    >
-                        Mark as Done
-                    </button>
-                )}
-                <button className="btn btn-danger btn-sm" onClick={handleDelete}>
-                    Delete
-                </button>
-            </div>
-        </li>
+        <div className={`task-item ${task.status}`}>
+            <h3>{task.title}</h3>
+            <p>{task.description}</p>
+            <p>Status: {task.status}</p>
+            <button onClick={handleEdit}>Edit</button>
+            <button onClick={handleDelete}>Delete</button>
+
+            <TaskForm
+                isOpen={isEditing}
+                onRequestClose={handleCloseModal}
+                taskToEdit={task}
+            />
+        </div>
     );
 };
 
