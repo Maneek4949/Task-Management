@@ -9,7 +9,7 @@ const TaskList = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <section className="md:ml-6 w-full grid grid-cols-2 gap-4">
+        <section className="md:ml-6 w-full grid md:grid-cols-2 md:gap-4">
             {tasks.map(task => (
                 <TaskItem key={task.id} task={task} />
             ))}
