@@ -6,6 +6,8 @@ const initialState = {
     tasks: [],
     loading: false,
     error: null,
+    showForm:false,
+    formType:'New',
 };
 
 const taskReducer = (state, action) => {
@@ -30,6 +32,8 @@ const taskReducer = (state, action) => {
                 ...state,
                 tasks: state.tasks.filter(task => task.id !== action.payload),
             };
+        case 'TOGGLE_FORM':
+            return { ...state, showForm: !state.showForm, formType: action.payload.formType, currentTask: action.payload.task || null };
         default:
             return state;
     }
@@ -38,8 +42,12 @@ const taskReducer = (state, action) => {
 export const TaskProvider = ({ children }) => {
     const [state, dispatch] = useReducer(taskReducer, initialState);
 
+    const handleOpenForm = (formType,task)=>{
+        dispatch({ type: 'TOGGLE_FORM', payload: { formType, task } });
+    }
+
     return (
-        <TaskContext.Provider value={{ state, dispatch }}>
+        <TaskContext.Provider value={{ state, dispatch, handleOpenForm }}>
             {children}
         </TaskContext.Provider>
     );

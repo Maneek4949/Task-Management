@@ -1,36 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TaskProvider } from './context/TaskContext';
-import TaskList from './components/TaskList';
-import TaskForm from './components/TaskForm';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
 
 
 const App = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [taskToEdit, setTaskToEdit] = useState(null);
-
-    const handleOpenModal = (task = null) => {
-        setTaskToEdit(task);
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setTaskToEdit(null);
-    };
-
     return (
         <TaskProvider>
-            <div className="app container">
-                <div className="header">
-                    <h1>Task Manager</h1>
-                    <button className="btn btn-primary" onClick={() => handleOpenModal()}>Add Task</button>
-                </div>
-                <TaskList />
-                <TaskForm
-                    isOpen={isModalOpen}
-                    onRequestClose={handleCloseModal}
-                    taskToEdit={taskToEdit}
-                />
+            <div className="md:px-16">
+                <Navbar/>
+                <Home/>
             </div>
         </TaskProvider>
     );
