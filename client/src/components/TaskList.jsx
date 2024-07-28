@@ -5,7 +5,7 @@ import TaskItem from './TaskItem';
 const TaskList = () => {
     const { tasks, loading, error } = useTasks();
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return (<div className='flex justify-center w-full'><div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin dark:border-violet-400"></div></div>);
     if (error) return <div>Error: {error}</div>;
 
     return (

@@ -7,7 +7,7 @@ import Home from './pages/Home';
 const App = () => {
     return (
         <TaskProvider>
-            <div className="md:px-16">
+            <div className="md:px-16 px-4">
                 <Navbar/>
                 <Home/>
             </div>

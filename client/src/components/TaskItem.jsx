@@ -17,7 +17,7 @@ const TaskItem = ({ task }) => {
     }
 
     return (
-        <div className={`w-full min-h-44 overflow-y-hidden ${task.status} bg-baby-orange rounded-md pt-4 pb-6 px-3 text-baby-brown` }>
+        <div className={`w-full min-h-44 overflow-y-hidden mb-4 bg-baby-orange rounded-md pt-4 pb-6 px-3 text-baby-brown` }>
             <div className='flex justify-between'>
                 <h2 className='font-semibold text-xl'>{task.title}</h2>
                 <div className='relative' onClick={handleShowButtons}>
