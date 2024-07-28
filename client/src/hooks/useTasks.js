@@ -1,60 +1,55 @@
-import { useContext, useEffect, useMemo, useCallback } from 'react';
-import TaskContext from '../context/TaskContext';
+import { useState, useEffect } from 'react';
 import { fetchTasks, createTask, updateTask, deleteTask } from '../services/taskService';
 
 const useTasks = () => {
-    const { state, dispatch } = useContext(TaskContext);
-    const memoizedTasks = useMemo(() => state.tasks, [state.tasks]);
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const getTasks = async () => {
-            dispatch({ type: 'FETCH_TASKS_REQUEST' });
+        const loadTasks = async () => {
+            setLoading(true);
             try {
                 const response = await fetchTasks();
-                dispatch({ type: 'FETCH_TASKS_SUCCESS', payload: response.data });
+                setTasks(response.data);
+                setLoading(false);
             } catch (error) {
-                dispatch({ type: 'FETCH_TASKS_FAILURE', payload: error.message });
+                setError(error.message);
+                setLoading(false);
             }
         };
 
-        getTasks();
-    }, [dispatch]); // Make sure this useEffect runs only once
+        loadTasks();
+    }, []);
 
-    const addTask = useCallback(async (task) => {
+    const addTask = async (task) => {
         try {
             const response = await createTask(task);
-            dispatch({ type: 'ADD_TASK', payload: response.data });
+            setTasks([...tasks, response.data]);
         } catch (error) {
-            console.error('Failed to add task:', error);
+            setError(error.message);
         }
-    }, [dispatch]);
+    };
 
-    const editTask = useCallback(async (taskId, task) => {
+    const editTask = async (taskId, updatedTask) => {
         try {
-            const response = await updateTask(taskId, task);
-            dispatch({ type: 'UPDATE_TASK', payload: response.data });
+            const response = await updateTask(taskId, updatedTask);
+            setTasks(tasks.map(task => task.id === taskId ? response.data : task));
         } catch (error) {
-            console.error('Failed to update task:', error);
+            setError(error.message);
         }
-    }, [dispatch]);
+    };
 
-    const removeTask = useCallback(async (taskId) => {
+    const removeTask = async (taskId) => {
         try {
             await deleteTask(taskId);
-            dispatch({ type: 'DELETE_TASK', payload: taskId });
+            setTasks(tasks.filter(task => task.id !== taskId));
         } catch (error) {
-            console.error('Failed to delete task:', error);
+            setError(error.message);
         }
-    }, [dispatch]);
-
-    return {
-        tasks: memoizedTasks,
-        loading: state.loading,
-        error: state.error,
-        addTask,
-        editTask,
-        removeTask,
     };
+
+    return { tasks, loading, error, addTask, editTask, removeTask };
 };
 
 export default useTasks;
